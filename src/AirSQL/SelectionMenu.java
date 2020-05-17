@@ -203,7 +203,7 @@ public class SelectionMenu {
 				double fcost = sc.nextDouble();
 
 				Flight flight = new Flight();
-				
+
 				flight.setTotalTakenSeats(0);
 				flight.setFlightCost(fcost);
 				flight.setFlightId(fId);
@@ -300,81 +300,87 @@ public class SelectionMenu {
 				} while (exist);
 			} else if (userIn == 4) {
 				for (int j = 0; j < 6; j++) {
-					if (j==0) {
+					if (j == 0) {
 						System.out.println("AirCan flights' IDs :");
-					}else if(j==1) {
+					} else if (j == 1) {
 						System.out.println("USair flights' IDs :");
-					}else if(j==2) {
+					} else if (j == 2) {
 						System.out.println("BritAir flights' IDs :");
-					}else if(j==3) {
+					} else if (j == 3) {
 						System.out.println("AirFrance flights' IDs :");
-					}else if(j==4) {
+					} else if (j == 4) {
 						System.out.println("LuftAir flights' IDs :");
-					}else {
+					} else {
 						System.out.println("ItalAir flights' IDs :");
 					}
 					for (int i = 0; i < flights.size(); i++) {
-						if(flights.get(i).getAirlineId().equalsIgnoreCase("aircan")) {
+						if (flights.get(i).getAirlineId().equalsIgnoreCase("aircan")) {
 							System.out.println(flights.get(i).getFlightId());
-						}else if(flights.get(i).getAirlineId().equalsIgnoreCase("usair")) {
+						} else if (flights.get(i).getAirlineId().equalsIgnoreCase("usair")) {
 							System.out.println(flights.get(i).getFlightId());
-						}else if(flights.get(i).getAirlineId().equalsIgnoreCase("britair")) {
+						} else if (flights.get(i).getAirlineId().equalsIgnoreCase("britair")) {
 							System.out.println(flights.get(i).getFlightId());
-						}else if(flights.get(i).getAirlineId().equalsIgnoreCase("airfrance")) {
+						} else if (flights.get(i).getAirlineId().equalsIgnoreCase("airfrance")) {
 							System.out.println(flights.get(i).getFlightId());
-						}else if(flights.get(i).getAirlineId().equalsIgnoreCase("luftair")) {
+						} else if (flights.get(i).getAirlineId().equalsIgnoreCase("luftair")) {
 							System.out.println(flights.get(i).getFlightId());
-						}else {
+						} else {
 							System.out.println(flights.get(i).getFlightId());
 						}
 					}
 				}
 			} else if (userIn == 5) {
-				boolean empty=true;
+				boolean empty = true;
 				for (int i = 0; i < flights.size(); i++) {
-					if(flights.get(i).getTotalTakenSeats()==flights.get(i).getTotalSeats()) {
-						if(empty) {
+					if (flights.get(i).getTotalTakenSeats() == flights.get(i).getTotalSeats()) {
+						if (empty) {
 							System.out.println("List with Full Flights: ");
-							empty=false;
+							empty = false;
 						}
-						System.out.println(" Airline's ID :" + flights.get(i).getAirlineId() + " Flight's ID : " + flights.get(i).getFlightId());
+						System.out.println(" Airline's ID :" + flights.get(i).getAirlineId() + " Flight's ID : "
+								+ flights.get(i).getFlightId());
 					}
-					
+
 				}
-				if(empty) {
+				if (empty) {
 					System.out.println("There are no full flights.");
 				}
 			} else if (userIn == 6) {
-				String fliAir[]=null;
-				int ids[]=null;
-				int k=0;
+				String fliAir[] = null;
+				int ids[] = null;
+				int k = 0;
 				int temp;
 				String temp2;
 				for (int i = 0; i < flights.size(); i++) {
-					if((flights.get(i).getDepartureAirport().equalsIgnoreCase("toronto") && flights.get(i).getDepartureAirport().equalsIgnoreCase("New York")) || (flights.get(i).getArrivalAirport().equalsIgnoreCase("toronto") && flights.get(i).getArrivalAirport().equalsIgnoreCase("New York"))){
-						ids[k]=Integer.parseInt(flights.get(i).getFlightId());
-						fliAir[k]="From : "+ flights.get(i).getDepartureAirport() + " to " + flights.get(i).getArrivalAirport() + "With flight Id: " + flights.get(i).getFlightId();
+					if ((flights.get(i).getDepartureAirport().equalsIgnoreCase("toronto")
+							&& flights.get(i).getDepartureAirport().equalsIgnoreCase("New York"))
+							|| (flights.get(i).getArrivalAirport().equalsIgnoreCase("toronto")
+									&& flights.get(i).getArrivalAirport().equalsIgnoreCase("New York"))) {
+						ids[k] = Integer.parseInt(flights.get(i).getFlightId());
+						fliAir[k] = "From : " + flights.get(i).getDepartureAirport() + " to "
+								+ flights.get(i).getArrivalAirport() + "With flight Id: "
+								+ flights.get(i).getFlightId();
 						k++;
 					}
-					for(i=0; i<ids.length; i++) {
-						if (ids[i]>ids[i+1]) {
-							temp=ids[i];
-							ids[i]=ids[i+1];
-							ids[i+1]=temp;
-							temp2=fliAir[i];
-							fliAir[i]=fliAir[i+1];
-							fliAir[i+1]=temp2;
+					for (i = 0; i < ids.length; i++) {
+						if (ids[i] > ids[i + 1]) {
+							temp = ids[i];
+							ids[i] = ids[i + 1];
+							ids[i + 1] = temp;
+							temp2 = fliAir[i];
+							fliAir[i] = fliAir[i + 1];
+							fliAir[i + 1] = temp2;
 						}
 					}
 				}
-				for(int i=0; i<fliAir.length; i++) {
+				for (int i = 0; i < fliAir.length; i++) {
 					System.out.println(fliAir[i]);
-					
+
 				}
 
 			} else if (userIn == 7) {
 				System.out.println("-----Booking Ticket Menu-----");
-				if(flights.size()==0) {
+				if (flights.size() == 0) {
 					System.out.println("There are no avaible flights in any airline!");
 					continue;
 				}
@@ -392,19 +398,46 @@ public class SelectionMenu {
 							&& !"luftair".equalsIgnoreCase(airId) && !"itair".equalsIgnoreCase(airId));
 				}
 				System.out.println("Please enter the flight's ID.");
-				String tiflid=sc.nextLine();
-				boolean f=true;
-				int i=0;
+				String tiflid = sc.nextLine();
+				boolean f = true;
+				int i = 0;
 				do {
-					for ( i=0; i<flights.size( ); i++) {
-						if(airId.equalsIgnoreCase(flights.get(i).getAirlineId()) && tiflid.equalsIgnoreCase(flights.get(i).getFlightId())) {
-							System.out.println("Flight Found!");
-							
+					for (i = 0; i < flights.size(); i++) {
+						if (airId.equalsIgnoreCase(flights.get(i).getAirlineId())
+								&& tiflid.equalsIgnoreCase(flights.get(i).getFlightId())) {
+							if (flights.get(i).getTotalTakenSeats() == flights.get(i).getTotalSeats()) {
+								System.out.println("This flight has no reaming seats!");
+							} else {
+								System.out.println("Flight Found!");
+								System.out.println("Airline : " + flights.get(i).getAirlineId());
+								System.out.println("Flights ID : " + flights.get(i).getFlightId());
+								System.out.println("Business available seats : "
+										+ (flights.get(i).getTotalBusSeats() - flights.get(i).getTakenBusSeats()));
+								System.out.println("Economy available seats : "
+										+ (flights.get(i).getTotalEcoSeats() - flights.get(i).getTakenEcoSeats()));
+								System.out.println("Smoking available seats : "
+										+ (flights.get(i).getTotalSmoSeats() - flights.get(i).getTakenSmoSeats()));
+								System.out.println("Flight's value :" + flights.get(i).getFlightCost());
+								System.out.println("Flight's Duration: " + flights.get(i).getFlightTime());
+							}
 						}
 					}
+
+				} while (i < flights.size() && f);
+				System.out.println("Would you like to make a booking? (Yes/No)");
+				String ansr;
+				ansr = sc.nextLine();
+				if (!ansr.equalsIgnoreCase("yes") || !ansr.equalsIgnoreCase("No")) {
+					do {
+						System.out.println("Please enter 'Yes' or 'No'.");
+						ansr = sc.nextLine();
+					} while (!ansr.equalsIgnoreCase("yes") || !ansr.equalsIgnoreCase("No"));
+				} else if (ansr.equalsIgnoreCase("No")) {
+					continue;
+				} else {
+					System.out.println("Please enter the buyer's information.");
 					
-				}while( i <flights.size() && f);
-				
+				}
 
 			} else if (userIn == 8) {
 
