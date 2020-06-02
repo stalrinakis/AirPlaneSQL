@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
@@ -6,7 +7,7 @@ import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Random;
 
-public class main {
+public class Program {
 
 	public static void main(String[] args) throws SQLException {
 		System.out.println("MySQL Connect Example");
@@ -34,9 +35,25 @@ public class main {
 			System.out.println(
 					"Main menu: \n [1] Insert Flights.\n [2] Book Ticket.\n [3] Ticket Availability .\n [4] Flights via Airline."
 							+ "\n [5] Packed Flights.\n [6] Available Flights Betwen Toronto and New Yrok.\n [7] Booking Tickets.\n [8] Seat Status Upadte.\n [9]Canceled Bookings.\n [0] Exit.");
-
-			int userInput = sc.nextInt();
-			sc.nextLine();
+			String number;
+			int userInput=0;
+			boolean t=true;
+			System.out.println("peos");
+			while (t) {
+			System.out.println("Enter number:");
+			number = sc.nextLine();
+			if (number.matches("[0-9]+")) {
+				userInput=Integer.parseInt(number);
+				if(userInput<10) {
+					System.out.println("mphke");
+				}
+				
+			    System.out.println("Invalid number");
+			}else {
+				System.out.println("invalid");
+			}
+			}
+			
 			if (userInput == 1) {
 
 				System.out.println("\n--------------- ADD NEW FLIGHT ---------------");
