@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.Random;
 
@@ -62,7 +64,7 @@ public class Program {
 				System.out.println("Airline ID: ");
 
 				String airlineId = sc.nextLine();
-				boolean find=false;
+				boolean find = false;
 				while (true) {
 					if (!airlineId.toLowerCase().equalsIgnoreCase("aircan")
 							&& !airlineId.toLowerCase().equalsIgnoreCase("usair")
@@ -76,23 +78,23 @@ public class Program {
 						airlineId = sc.nextLine();
 					} else {
 						PreparedStatement prepStat = null;
-						String query =("select  count(distinct flightid) from flight where flightairlineid = ? and flightid = ?");
-						prepStat=conn.prepareStatement(query);
+						String query = ("select  count(distinct flightid) from flight where flightairlineid = ? and flightid = ?");
+						prepStat = conn.prepareStatement(query);
 						prepStat.setString(1, airlineId);
-						prepStat.setString(2,flightId);
-						ResultSet rs=prepStat.executeQuery();
+						prepStat.setString(2, flightId);
+						ResultSet rs = prepStat.executeQuery();
 						if (rs.next()) {
-					        int count = rs.getInt(1);
-					        if(count>0) {
-					        	System.out.println("A Flight with the same ID in the same Airline already exists!");
-					        	find=true;
-					        }
-					     }
+							int count = rs.getInt(1);
+							if (count > 0) {
+								System.out.println("A Flight with the same ID in the same Airline already exists!");
+								find = true;
+							}
+						}
 						break;
 					}
-					
+
 				}
-				if(find) {
+				if (find) {
 					break;
 				}
 				System.out.println("Business Available: ");
@@ -133,7 +135,6 @@ public class Program {
 				String flightTime = null;
 				while (true) {
 					String fTime = sc.next();
-					//sc.hasNextLine();
 					if (fTime.contains(":")) {
 						String arr[] = fTime.split(":");
 
@@ -230,35 +231,77 @@ public class Program {
 
 				System.out.println("Booking Date: ");
 
-				String bookingDate = sc.nextLine();
+				LocalDate localDate = LocalDate.now();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/LLLL/yyyy");
+				String bookingDate = localDate.format(formatter);
 
 				System.out.println("Booking Seat Type: ");
-
 				String bookingSeatType = sc.nextLine();
+				while (true) {
+					if (bookingSeatType.toLowerCase().equalsIgnoreCase("Business")
+							|| bookingSeatType.toLowerCase().equalsIgnoreCase("Economy")) {
+						break;
+					} else {
+						System.out.println("Please enter a valid seat type (Business or Economy):");
+						bookingSeatType = sc.nextLine();
+					}
+				}
 
 				System.out.println("Booking Total Price: ");
-
-				float totalPrice = sc.nextFloat();
-				sc.nextLine();
+				float totalPrice = 0;
+				while (true) {
+					number = sc.nextLine();
+					if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
+						totalPrice = Float.parseFloat(number);
+						break;
+					} else {
+						System.out.println("Please enter a valid price.");
+					}
+				}
 
 				System.out.println("Booking Flight Price: ");
 
-				float flightPrice = sc.nextFloat();
-				sc.nextLine();
+				float flightPrice = 0;
+				while (true) {
+					number = sc.nextLine();
+					if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
+						flightPrice = Float.parseFloat(number);
+						break;
+					} else {
+						System.out.println("Please enter a valid price.");
+					}
+				}
 
 				System.out.println("Booking Seat Condition (a, b, c): ");
-
-				String seatCondition = sc.nextLine();
+				String seatCondition = null;
+				while (true) {
+					number = sc.nextLine();
+					if (number.toLowerCase().contentEquals("a") || number.toLowerCase().contentEquals("b")
+							|| number.toLowerCase().contentEquals("c")) {
+						seatCondition = number;
+						break;
+					} else {
+						System.out.println(
+								"Please enter a valid Seat Condition( a=held-paid off , b=cancelled , c=held-payment in advance(10 days from the booking day to pay).");
+					}
+				}
 
 				System.out.println("Booking Pre-Payment: ");
 
-				float prePayment = sc.nextFloat();
-				sc.nextLine();
+				float prePayment = 0;
+				while (true) {
+					number = sc.nextLine();
+					if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
+						prePayment = Float.parseFloat(number);
+						break;
+					} else {
+						System.out.println("Please enter a valid price.");
+					}
+				}
 
 				System.out.println("Booking Payment Remainder: ");
 
-				float paymentRemainder = sc.nextFloat();
-				sc.nextLine();
+				float paymentRemainder = flightPrice - prePayment;
 
 				PreparedStatement prepStat = conn
 						.prepareStatement("INSERT INTO booking (bookingid, bookingcity, bookingdate, "
@@ -278,11 +321,101 @@ public class Program {
 				prepStat.executeUpdate();
 
 			} else if (userInput == 3) {
-				System.out.println("All the full flights: ");
 
+				PreparedStatement prepStat = null;
+				String query = ("select count(*) from flight where flighttotalbusinessseats=flighttakenbusinessseats and flighttotalecoseats=flighttakenecoseats");
+				prepStat = conn.prepareStatement(query);
+				ResultSet rs = prepStat.executeQuery();
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					if (count == 0) {
+						System.out.println("No flights have been registered yet!");
+
+					} else {
+						System.out.println("All the full flights: ");
+						String fid = rs.getString("flightid");
+						String airid = rs.getString("flightairlineid");
+						int bs = rs.getInt("flighttotalbusinessseats");
+						int es = rs.getInt("flighttotaleconomyseats");
+						System.out.println("The flight from the" + airid + "airline with the flightId of : " + fid
+								+ "is full with " + bs + "business seats and " + es + "economy seats.");
+					}
+				}
+			} else if (userInput == 4) {
+				String toronto="toronto";
+				String newyork="newyork";
+				PreparedStatement prepStat = null;
+				String query = ("select count(*) from flight where (flighttotalbusinessseats=? and flighttotalecoseats=?) or (flighttotalbusinessseats=? and flighttotalecoseats=?) ");
+				prepStat = conn.prepareStatement(query);
+				ResultSet rs = prepStat.executeQuery();
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					if (count == 0) {
+						System.out.println("No flights have been registered yet!");
+
+					} else {
+						System.out.println("All the full flights: ");
+						String fid = rs.getString("flightid");
+						String airid = rs.getString("flightairlineid");
+						int bs = rs.getInt("flighttotalbusinessseats");
+						int es = rs.getInt("flighttotaleconomyseats");
+						System.out.println("The flight from the" + airid + "airline with the flightId of : " + fid
+								+ "is full with " + bs + "business seats and " + es + "economy seats.");
+					}
+				}
+				
+				
+			}else if (userInput == 5) {
+				System.out.println("---------------Booking ticket page---------------");
+				System.out.println("Flight ID: ");
+				String flightId = sc.nextLine();
+				System.out.println("Airline ID: ");
+				String airlineId = sc.nextLine();
+				boolean find = false;
+				while (true) {
+					if (!airlineId.toLowerCase().equalsIgnoreCase("aircan")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("usair")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("britair")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("airfrance")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("luftair")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("italair")) {
+
+						System.out.println(
+								"Please choose one of the following: AirCan, USAir, BritAir, AirFrance, LuftAir, ItalAir.");
+						airlineId = sc.nextLine();
+					}else {
+						find=true;
+						
+					
+					}
+					if (find) {
+						PreparedStatement prepStat = null;
+						String query = ("select count(*) from flight where (flighttotalbusinessseats=? and flighttotalecoseats=?) or (flighttotalbusinessseats=? and flighttotalecoseats=?) ");
+						prepStat = conn.prepareStatement(query);
+						ResultSet rs = prepStat.executeQuery();
+						if (rs.next()) {
+							int count = rs.getInt(1);
+							if (count == 0) {
+								System.out.println("No flights have been registered yet!");
+
+							} else {
+								System.out.println("All the full flights: ");
+								String fid = rs.getString("flightid");
+								String airid = rs.getString("flightairlineid");
+								int bs = rs.getInt("flighttotalbusinessseats");
+								int es = rs.getInt("flighttotaleconomyseats");
+								System.out.println("The flight from the" + airid + "airline with the flightId of : " + fid
+										+ "is full with " + bs + "business seats and " + es + "economy seats.");
+							}
+						
+					}
+				 }
+				}
+			}else if (userInput == 7) {
+				System.out.println("Enter the Prices!");
 			}
 
-			// sc.close();
+			sc.close();
 		}
 	}
 
