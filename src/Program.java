@@ -323,23 +323,19 @@ public class Program {
 			} else if (userInput == 3) {
 
 				PreparedStatement prepStat = null;
-				String query = ("select count(*) from flight where flighttotalbusinessseats=flighttakenbusinessseats and flighttotalecoseats=flighttakenecoseats");
+				String query = ("select * from flight where flighttotalbusinessseats=flighttakenbusinessseats and flighttotalecoseats=flighttakenecoseats");
 				prepStat = conn.prepareStatement(query);
 				ResultSet rs = prepStat.executeQuery();
 				if (rs.next()) {
-					int count = rs.getInt(1);
-					if (count == 0) {
-						System.out.println("No flights have been registered yet!");
-
-					} else {
 						System.out.println("All the full flights: ");
 						String fid = rs.getString("flightid");
 						String airid = rs.getString("flightairlineid");
 						int bs = rs.getInt("flighttotalbusinessseats");
-						int es = rs.getInt("flighttotaleconomyseats");
-						System.out.println("The flight from the" + airid + "airline with the flightId of : " + fid
-								+ "is full with " + bs + "business seats and " + es + "economy seats.");
-					}
+						int es = rs.getInt("flighttotalecoseats");
+						System.out.println("The flight from the " + airid + " airline with the flightId of : " + fid +" is full with " +bs+" business seats and " + es+" economy seats." );
+					
+				}else {
+					System.out.println("no flight found");
 				}
 			} else if (userInput == 4) {
 				String toronto="toronto";
@@ -348,6 +344,8 @@ public class Program {
 				String query = ("select count(*) from flight where (flighttotalbusinessseats=? and flighttotalecoseats=?) or (flighttotalbusinessseats=? and flighttotalecoseats=?) ");
 				prepStat = conn.prepareStatement(query);
 				ResultSet rs = prepStat.executeQuery();
+				prepStat.setString(1, toronto);
+				prepStat.setString(2, newyork);
 				if (rs.next()) {
 					int count = rs.getInt(1);
 					if (count == 0) {
@@ -390,13 +388,13 @@ public class Program {
 					}
 					if (find) {
 						PreparedStatement prepStat = null;
-						String query = ("select count(*) from flight where (flighttotalbusinessseats=? and flighttotalecoseats=?) or (flighttotalbusinessseats=? and flighttotalecoseats=?) ");
+						String query = ("select flight=? and flightairlineid=? from flight");
 						prepStat = conn.prepareStatement(query);
 						ResultSet rs = prepStat.executeQuery();
 						if (rs.next()) {
 							int count = rs.getInt(1);
 							if (count == 0) {
-								System.out.println("No flights have been registered yet!");
+								System.out.println("No flights at this airline have been registered yet!");
 
 							} else {
 								System.out.println("All the full flights: ");
@@ -414,9 +412,8 @@ public class Program {
 			}else if (userInput == 7) {
 				System.out.println("Enter the Prices!");
 			}
-
-			sc.close();
 		}
+		sc.close();
 	}
 
 	private static String getRandomId() {
