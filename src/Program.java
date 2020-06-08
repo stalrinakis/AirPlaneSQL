@@ -228,48 +228,86 @@ public class Program {
 				System.out.println("\n--------------- NEW BOOKING ---------------");
 
 				String bookingId = getRandomId();
-				while(true) {
+				while (true) {
 					PreparedStatement bExist = null;
-					String query = ("select clientid=? from client");
+					String query = ("select bookingid=? from booking");
 					bExist = conn.prepareStatement(query);
 					bExist.setString(1, bookingId);
 					ResultSet rs = bExist.executeQuery();
-					if(!rs.next()) {
+					if (!rs.next()) {
+
 						break;
 					}
 				}
-				
-				
-				String cID=null;
+
+				String cID = null;
 				System.out.println("Is the Client registered? (Y/N)");
 				String ans = sc.nextLine();
 				while (true) {
-					if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("n") )) {
+		
+					if (!(ans.trim().toLowerCase().equalsIgnoreCase("y")
+							|| ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
 						System.out.println("Please enter a valid answer (Y/N)");
 						ans = sc.nextLine();
 					} else {
+				
 						break;
 					}
 				}
-				ans = ans.substring(0, 1);
-				if (ans.trim().equalsIgnoreCase("N")) {
+			
+				if (ans.trim().toLowerCase().equalsIgnoreCase("n")) {
 					while (true) {
-						 cID = getRandomId();
+						cID = getRandomId();
 						PreparedStatement cExist = null;
-						String query = ("select clientid=? from client");
+						String query = ("select * from client where clientid=? ");
 						cExist = conn.prepareStatement(query);
 						cExist.setString(1, cID);
 						ResultSet rs = cExist.executeQuery();
+						
 						if (!rs.next()) {
 							System.out.println("Enter the client's name:");
 							String name = sc.nextLine();
 							System.out.println("Enter the client's surname:");
 							String surname = sc.nextLine();
+
+							String addressid = null;
+							while (true) {
+								addressid = getRandomId();
+								PreparedStatement exist = null;
+								String qu = ("select clientaddressid=? from client");
+								exist = conn.prepareStatement(qu);
+								exist.setString(1, addressid);
+								ResultSet res = exist.executeQuery();
+								if (!rs.next()) {
+									break;
+								}
+							}
+							System.out.println("Enter the client's street");
+							String cStreet = sc.nextLine();
+							System.out.println("Enter the client's city");
+							String cCity = sc.nextLine();
+							System.out.println("Enter the client's Postal Code");
+							String cPC = sc.nextLine();
+							System.out.println("Enter the client's Country");
+							String cCountry = sc.nextLine();
+							/*
+							 * PreparedStatement add = conn.prepareStatement(
+							 * "INSERT INTO mailing_address (addressid, street, city, postalcode, country, client_clientid) VALUES (?, ?, ?, ?, ?, ?)"
+							 * );
+							 * 
+							 * add.setString(1, addressid); add.setString(2, cStreet); add.setString(3,
+							 * cCity); add.setString(4, cPC); add.setString(5, cCountry); add.setString(5,
+							 * cID);
+							 * 
+							 * add.executeUpdate();
+							 */
+
 							System.out.println("Add client's email?(Y/N)");
 							String email = null;
 							ans = sc.nextLine();
 							while (true) {
-								if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("y") )) {
+								if (!(ans.trim().toLowerCase().equalsIgnoreCase("y")
+										|| ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
 									System.out.println("Please enter a valid answer (Y/N)");
 									ans = sc.nextLine();
 								} else {
@@ -280,17 +318,16 @@ public class Program {
 									emailExist = conn.prepareStatement(qy);
 									emailExist.setString(1, email);
 									rs = cExist.executeQuery();
-										while(rs.next()) {
-											System.out.println("This email is taken, please anter a different one: ");
-											email = sc.nextLine();
-											qy = ("select clientemail=? from client");
-											emailExist = conn.prepareStatement(qy);
-											emailExist.setString(1, email);
-											rs = cExist.executeQuery();
-											
-										}
-									
-									
+									while (rs.next()) {
+										System.out.println("This email is taken, please anter a different one: ");
+										email = sc.nextLine();
+										qy = ("select clientemail=? from client");
+										emailExist = conn.prepareStatement(qy);
+										emailExist.setString(1, email);
+										rs = cExist.executeQuery();
+
+									}
+
 									break;
 								}
 							}
@@ -301,22 +338,23 @@ public class Program {
 							stat.setString(2, name);
 							stat.setString(3, surname);
 							stat.setString(4, email);
-							stat.setString(5, null);
+							stat.setString(5, addressid);
 
 							stat.executeUpdate();
 							// add
 							while (true) {
 								System.out.println("Add another email? (Y/N)");
 								ans = sc.nextLine();
-								if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("y") )) {
+								if (!(ans.trim().toLowerCase().equalsIgnoreCase("y")
+										|| ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
 									System.out.println("Please enter a valid answer (Y/N)");
 									ans = sc.nextLine();
 								} else {
-									if (ans.trim().equalsIgnoreCase("y")) {
+									if (ans.trim().toLowerCase().equalsIgnoreCase("y")) {
 										System.out.println("Enter the client's email:");
 										email = sc.nextLine();
 										stat = conn.prepareStatement(
-												"INSERT INTO client (cliendid,clientmail) VALUES (?,?)");
+												"INSERT INTO client (clientid, clientemail) VALUES (?, ?)");
 										stat.setString(1, cID);
 										stat.setString(2, email);
 										stat.executeUpdate();
@@ -332,7 +370,8 @@ public class Program {
 							System.out.println("Add client's fax?(Y/N)");
 							ans = sc.nextLine();
 							while (true) {
-								if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("y") )) {
+								if (!(ans.trim().toLowerCase().equalsIgnoreCase("y")
+										|| ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
 									System.out.println("Please enter a valid answer (Y/N)");
 									ans = sc.nextLine();
 								} else {
@@ -359,11 +398,12 @@ public class Program {
 							while (true) {
 								System.out.println("Add another fax? (Y/N)");
 								ans = sc.nextLine();
-								if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("y") )) {
+								if (!(ans.trim().toLowerCase().equalsIgnoreCase("y")
+										|| ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
 									System.out.println("Please enter a valid answer (Y/N)");
 									ans = sc.nextLine();
 								} else {
-									if (ans.trim().equalsIgnoreCase("y")) {
+									if (ans.trim().toLowerCase().equalsIgnoreCase("y")) {
 										System.out.println("Enter the client's country code:");
 										cCode = sc.nextLine();
 										System.out.println("Enter the client's region code:");
@@ -392,303 +432,228 @@ public class Program {
 							System.out.println("Add client's telephone?(Y/N)");
 							ans = sc.nextLine();
 							while (true) {
-								if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("y") )) {
+								if (!(ans.trim().toLowerCase().equalsIgnoreCase("y")
+										|| ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
 									System.out.println("Please enter a valid answer (Y/N)");
 									ans = sc.nextLine();
 								} else {
 									break;
 								}
 							}
-							System.out.println("Enter the client's country code:");
-							String TcCode = sc.nextLine();
-							System.out.println("Enter the client's region code:");
-							String TrCode = sc.nextLine();
-							System.out.println("Enter the client's local number:");
-							String TlNumber = sc.nextLine();
-							String telid = TcCode + TrCode + TlNumber;
-							PreparedStatement TEL = conn.prepareStatement(
-									"INSERT INTO telephone (telephoneid, countrycode, regioncode, localnumber, client_clientid) VALUES (?, ?, ?, ?, ?)");
+							if (ans.trim().toLowerCase().equalsIgnoreCase("y")) {
+								System.out.println("Enter the client's country code:");
+								String TcCode = sc.nextLine();
+								System.out.println("Enter the client's region code:");
+								String TrCode = sc.nextLine();
+								System.out.println("Enter the client's local number:");
+								String TlNumber = sc.nextLine();
+								String telid = TcCode + TrCode + TlNumber;
+								PreparedStatement TEL = conn.prepareStatement(
+										"INSERT INTO telephone (telephoneid, countrycode, regioncode, localnumber, client_clientid) VALUES (?, ?, ?, ?, ?)");
 
-							TEL.setString(1, TcCode);
-							TEL.setString(2, TcCode);
-							TEL.setString(3, TrCode);
-							TEL.setString(4, TlNumber);
-							TEL.setString(5, telid);
-							TEL.executeUpdate();
-							// add
-							while (true) {
-								System.out.println("Add another telephone? (Y/N)");
-								ans = sc.nextLine();
-								if (!(ans.trim().equalsIgnoreCase("y") || ans.trim().equalsIgnoreCase("y") )) {
-									System.out.println("Please enter a valid answer (Y/N)");
+								TEL.setString(1, TcCode);
+								TEL.setString(2, TcCode);
+								TEL.setString(3, TrCode);
+								TEL.setString(4, TlNumber);
+								TEL.setString(5, telid);
+								TEL.executeUpdate();
+								// add
+
+								while (true) {
+									System.out.println("Add another telephone? (Y/N)");
 									ans = sc.nextLine();
-								} else {
-									if (ans.trim().equalsIgnoreCase("y")) {
-										System.out.println("Enter the client's country code:");
-										TcCode = sc.nextLine();
-										System.out.println("Enter the client's region code:");
-										TrCode = sc.nextLine();
-										System.out.println("Enter the client's local number:");
-										TlNumber = sc.nextLine();
-										faxid = TcCode + TrCode + TlNumber;
-										TEL = conn.prepareStatement(
-												"INSERT INTO telephone (telephoneid, countrycode, regioncode, localnumber, client_clientid) VALUES (?, ?, ?, ?, ?)");
-
-										TEL.setString(1, TcCode);
-										TEL.setString(2, TcCode);
-										TEL.setString(3, TrCode);
-										TEL.setString(4, TlNumber);
-										TEL.setString(5, cID);
-										TEL.executeUpdate();
-
-										// add
+									if (!(ans.trim().toLowerCase().equalsIgnoreCase("y") || ans.trim().toLowerCase().equalsIgnoreCase("n"))) {
+										System.out.println("Please enter a valid answer (Y/N)");
+										ans = sc.nextLine();
 									} else {
-										break;
+										if (ans.trim().equalsIgnoreCase("y")) {
+											System.out.println("Enter the client's country code:");
+											TcCode = sc.nextLine();
+											System.out.println("Enter the client's region code:");
+											TrCode = sc.nextLine();
+											System.out.println("Enter the client's local number:");
+											TlNumber = sc.nextLine();
+											faxid = TcCode + TrCode + TlNumber;
+											TEL = conn.prepareStatement(
+													"INSERT INTO telephone (telephoneid, countrycode, regioncode, localnumber, client_clientid) VALUES (?, ?, ?, ?, ?)");
+
+											TEL.setString(1, TcCode);
+											TEL.setString(2, TcCode);
+											TEL.setString(3, TrCode);
+											TEL.setString(4, TlNumber);
+											TEL.setString(5, cID);
+											TEL.executeUpdate();
+
+											// add
+										} else {
+											break;
+										}
+
 									}
-
 								}
 							}
-							
-							String addressid=null;
-							while (true) {
-								 addressid = getRandomId();
-								PreparedStatement exist = null;
-								String qu = ("select clientid=? from client");
-								exist = conn.prepareStatement(qu);
-								exist.setString(1, addressid);
-								ResultSet res = exist.executeQuery();
-								if(!rs.next()) {
-									break;
-								}
-							}
-							System.out.println("Enter the client's street");
-							String cStreet=sc.nextLine();
-							System.out.println("Enter the client's city");
-							String cCity=sc.nextLine();
-							System.out.println("Enter the client's Postal Code");
-							String cPC=sc.nextLine();
-							System.out.println("Enter the client's Country");
-							String cCountry=sc.nextLine();
-							PreparedStatement add = conn.prepareStatement(
-									"INSERT INTO mailing_address (addressid, street, city, postalcode, country, client_clientid) VALUES (?, ?, ?, ?, ?, ?)");
 
-							add.setString(1, addressid);
-							add.setString(2, cStreet);
-							add.setString(3, cCity);
-							add.setString(4, cPC);
-							add.setString(5, cCountry);
-							add.setString(5, cID);
-							
-							add.executeUpdate();
-							
-						
-					
+						} else {
+							continue;// arxiko while(client id)
+						}
+
+					}
 				} else {
-					break;// arxiko while(client id)
+					System.out.println("Enter the client's id:");
+					cID = sc.nextLine();
+					while (true) {
+						PreparedStatement cExist = null;
+						String query = ("select clientid=? from client");
+						cExist = conn.prepareStatement(query);
+						cExist.setString(1, cID);
+						ResultSet rs = cExist.executeQuery();
+						if (!rs.next()) {
+							break;
+						}
+					}
+
 				}
-						
-			}
-		}else {
-		System.out.println("Enter the client's id:");
-		 cID=sc.nextLine();
-		 while(true) {
-		    PreparedStatement cExist = null;
-			String query = ("select clientid=? from client");
-			cExist = conn.prepareStatement(query);
-			cExist.setString(1, cID);
-			ResultSet rs = cExist.executeQuery();
-			if(!rs.next()) {
-				break;
-			}
-		 }
-		 
-		}
-		System.out.println("Enter the flight id: ");
+				System.out.println("Enter the flight id: ");
 
-		String flid = sc.nextLine();		
-		System.out.println("Booking City: ");
+				String flid = sc.nextLine();
+				System.out.println("Booking City: ");
 
-		String bookingCity = sc.nextLine();
+				String bookingCity = sc.nextLine();
 
-		System.out.println("Booking Date: ");
+				System.out.println("Booking Date: ");
 
-		LocalDate localDate = LocalDate.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/LLLL/yyyy");
-		String bookingDate = localDate.format(formatter);
+				LocalDate localDate = LocalDate.now();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/LLLL/yyyy");
+				String bookingDate = localDate.format(formatter);
 
-		System.out.println("Booking Seat Type: ");
-		String bookingSeatType = sc.nextLine();
-		while (true) {
-			if (bookingSeatType.toLowerCase().equalsIgnoreCase("business")
-					|| bookingSeatType.toLowerCase().equalsIgnoreCase("economy")) {
-				break;
-			} else {
-				System.out.println("Please enter a valid seat type (Business or Economy):");
-				bookingSeatType = sc.nextLine();
-			}
-		}
+				System.out.println("Booking Seat Type: ");
+				String bookingSeatType = sc.nextLine();
+				while (true) {
+					if (bookingSeatType.toLowerCase().equalsIgnoreCase("business")
+							|| bookingSeatType.toLowerCase().equalsIgnoreCase("economy")) {
+						break;
+					} else {
+						System.out.println("Please enter a valid seat type (Business or Economy):");
+						bookingSeatType = sc.nextLine();
+					}
+				}
 
-		System.out.println("Booking Total Price: ");
-		float totalPrice = 0;
-		while (true) {
-			number = sc.nextLine();
-			if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
-				totalPrice = Float.parseFloat(number);
-				break;
-			} else {
-				System.out.println("Please enter a valid price.");
-			}
-		}
+				System.out.println("Booking Total Price: ");
+				float totalPrice = 0;
+				while (true) {
+					number = sc.nextLine();
+					if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
+						totalPrice = Float.parseFloat(number);
+						break;
+					} else {
+						System.out.println("Please enter a valid price.");
+					}
+				}
 
-		System.out.println("Booking Flight Price: ");
+				System.out.println("Booking Flight Price: ");
 
-		float flightPrice = 0;
-		while (true) {
-			number = sc.nextLine();
-			if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
-				flightPrice = Float.parseFloat(number);
-				break;
-			} else {
-				System.out.println("Please enter a valid price.");
-			}
-		}
+				float flightPrice = 0;
+				while (true) {
+					number = sc.nextLine();
+					if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
+						flightPrice = Float.parseFloat(number);
+						break;
+					} else {
+						System.out.println("Please enter a valid price.");
+					}
+				}
 
-		System.out.println("Booking Seat Condition (a, b, c): ");
-		String seatCondition = null;
-		while (true) {
-			number = sc.nextLine();
-			if (number.toLowerCase().contentEquals("a") || number.toLowerCase().contentEquals("b")
-					|| number.toLowerCase().contentEquals("c")) {
-				seatCondition = number;
-				break;
-			} else {
-				System.out.println(
-						"Please enter a valid Seat Condition(a = held-paid off, b = cancelled, c = held-payment in advance (10 days from the booking day to pay).");
-			}
-		}
+				System.out.println("Booking Seat Condition (a, b, c): ");
+				String seatCondition = null;
+				while (true) {
+					number = sc.nextLine();
+					if (number.toLowerCase().contentEquals("a") || number.toLowerCase().contentEquals("b")
+							|| number.toLowerCase().contentEquals("c")) {
+						seatCondition = number;
+						break;
+					} else {
+						System.out.println(
+								"Please enter a valid Seat Condition(a = held-paid off, b = cancelled, c = held-payment in advance (10 days from the booking day to pay).");
+					}
+				}
 
-		System.out.println("Booking Pre-Payment: ");
+				System.out.println("Booking Pre-Payment: ");
 
-		float prePayment = 0;
-		while (true) {
-			number = sc.nextLine();
-			if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
-				prePayment = Float.parseFloat(number);
-				break;
-			} else {
-				System.out.println("Please enter a valid price.");
-			}
-		}
+				float prePayment = 0;
+				while (true) {
+					number = sc.nextLine();
+					if (number.matches("[+]?([0-9]*[.])?[0-9]+")) {
+						prePayment = Float.parseFloat(number);
+						break;
+					} else {
+						System.out.println("Please enter a valid price.");
+					}
+				}
 
-		System.out.println("Booking Payment Remainder: ");
+				System.out.println("Booking Payment Remainder: ");
 
-		float paymentRemainder = flightPrice - prePayment;
+				float paymentRemainder = flightPrice - prePayment;
 
-		PreparedStatement prepStat = conn.prepareStatement("INSERT INTO booking (bookingid, bookingcity, bookingdate, "
-				+ "bookingseattype, bookingtotalprice, bookingflightprice, "
-				+ "bookingseatcondition, bookingprepayment, bookingremainder, client_clientid, flight_flightid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				PreparedStatement prepStat = conn
+						.prepareStatement("INSERT INTO booking (bookingid, bookingcity, bookingdate, "
+								+ "bookingseattype, bookingtotalprice, bookingflightprice, "
+								+ "bookingseatcondition, bookingprepayment, bookingremainder, client_clientid, flight_flightid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-		prepStat.setString(1, bookingId);
-		prepStat.setString(2, bookingCity);
-		prepStat.setString(3, bookingDate);
-		prepStat.setString(4, bookingSeatType);
-		prepStat.setFloat(5, totalPrice);
-		prepStat.setFloat(6, flightPrice);
-		prepStat.setString(7, seatCondition);
-		prepStat.setFloat(8, prePayment);
-		prepStat.setFloat(9, paymentRemainder);
-		prepStat.setString(10, cID);
-		prepStat.setString(11, flid);
-		
+				prepStat.setString(1, bookingId);
+				prepStat.setString(2, bookingCity);
+				prepStat.setString(3, bookingDate);
+				prepStat.setString(4, bookingSeatType);
+				prepStat.setFloat(5, totalPrice);
+				prepStat.setFloat(6, flightPrice);
+				prepStat.setString(7, seatCondition);
+				prepStat.setFloat(8, prePayment);
+				prepStat.setFloat(9, paymentRemainder);
+				prepStat.setString(10, cID);
+				prepStat.setString(11, flid);
 
-		prepStat.executeUpdate();
+				prepStat.executeUpdate();
 
-	}else if(userInput==3)
+			} else if (userInput == 3)
 
-	{	
-		System.out.println("All the registered flights:");
+			{
+				System.out.println("All the registered flights:");
 
-		PreparedStatement prepStat = null;
-		PreparedStatement prepSeats = null;
-		
-		String query = ("select * from flight");
-		prepStat = conn.prepareStatement(query);
-		ResultSet rs = prepStat.executeQuery();
-		while (rs.next()) {
-
-			String fid = rs.getString("flightid");
-			String airid = rs.getString("airlineid");
-			String query2 = ("select count(*) from avail where flight_flightid=? and flighttotalbusinessseats=flighttotalbusinessseats and flighttotalecoseats=flighttakenecoseats");
-			prepSeats = conn.prepareStatement(query2);
-			prepSeats.setString(1, fid);
-			ResultSet res = prepSeats.executeQuery();
-			int count=res.getInt("count(*)");
-			if(count>0) {
-			int bs = res.getInt("flighttotalbusinessseats");
-			int es = res.getInt("flighttotalecoseats");
-			System.out.println("Flight" + fid +" from the " + airid + " airline" + "bs" + bs + " es" + es);
-			}else {
-				break;
-			}
-		} 
-	}else if(userInput==4)
-	{
-		String toronto = "toronto";
-		String newyork = "newyork";
-		PreparedStatement prepStat = null;
-		String query = ("select count(*) from flight where (flighttotalbusinessseats=? and flighttotalecoseats=?) or (flighttotalbusinessseats=? and flighttotalecoseats=?) ");
-		prepStat = conn.prepareStatement(query);
-		ResultSet rs = prepStat.executeQuery();
-		prepStat.setString(1, toronto);
-		prepStat.setString(2, newyork);
-		if (rs.next()) {
-			int count = rs.getInt(1);
-			if (count == 0) {
-				System.out.println("No flights have been registered yet!");
-
-			} else {
-				System.out.println("All the full flights: ");
-				String fid = rs.getString("flightid");
-				String airid = rs.getString("flightairlineid");
-				int bs = rs.getInt("flighttotalbusinessseats");
-				int es = rs.getInt("flighttotaleconomyseats");
-				System.out.println("The flight from the" + airid + "airline with the flightId of : " + fid
-						+ "is full with " + bs + "business seats and " + es + "economy seats.");
-			}
-		}
-
-	}else if(userInput==5)
-	{
-		System.out.println("---------------Booking ticket page---------------");
-		System.out.println("Flight ID: ");
-		String flightId = sc.nextLine();
-		System.out.println("Airline ID: ");
-		String airlineId = sc.nextLine();
-		boolean find = false;
-		while (true) {
-			if (!airlineId.toLowerCase().equalsIgnoreCase("aircan")
-					&& !airlineId.toLowerCase().equalsIgnoreCase("usair")
-					&& !airlineId.toLowerCase().equalsIgnoreCase("britair")
-					&& !airlineId.toLowerCase().equalsIgnoreCase("airfrance")
-					&& !airlineId.toLowerCase().equalsIgnoreCase("luftair")
-					&& !airlineId.toLowerCase().equalsIgnoreCase("italair")) {
-
-				System.out.println(
-						"Please choose one of the following: AirCan, USAir, BritAir, AirFrance, LuftAir, ItalAir.");
-				airlineId = sc.nextLine();
-			} else {
-				find = true;
-
-			}
-			if (find) {
 				PreparedStatement prepStat = null;
-				String query = ("select flight=? and flightairlineid=? from flight");
+				PreparedStatement prepSeats = null;
+
+				String query = ("select * from flight");
 				prepStat = conn.prepareStatement(query);
 				ResultSet rs = prepStat.executeQuery();
+				while (rs.next()) {
+
+					String fid = rs.getString("flightid");
+					String airid = rs.getString("airlineid");
+					String query2 = ("select count(*) from avail where flight_flightid=? and flighttotalbusinessseats=flighttotalbusinessseats and flighttotalecoseats=flighttakenecoseats");
+					prepSeats = conn.prepareStatement(query2);
+					prepSeats.setString(1, fid);
+					ResultSet res = prepSeats.executeQuery();
+					int count = res.getInt("count(*)");
+					if (count > 0) {
+						int bs = res.getInt("flighttotalbusinessseats");
+						int es = res.getInt("flighttotalecoseats");
+						System.out.println("Flight" + fid + " from the " + airid + " airline" + "bs" + bs + " es" + es);
+					} else {
+						break;
+					}
+				}
+			} else if (userInput == 4) {
+				String toronto = "toronto";
+				String newyork = "newyork";
+				PreparedStatement prepStat = null;
+				String query = ("select count(*) from flight where (flighttotalbusinessseats=? and flighttotalecoseats=?) or (flighttotalbusinessseats=? and flighttotalecoseats=?) ");
+				prepStat = conn.prepareStatement(query);
+				ResultSet rs = prepStat.executeQuery();
+				prepStat.setString(1, toronto);
+				prepStat.setString(2, newyork);
 				if (rs.next()) {
 					int count = rs.getInt(1);
 					if (count == 0) {
-						System.out.println("No flights at this airline have been registered yet!");
+						System.out.println("No flights have been registered yet!");
 
 					} else {
 						System.out.println("All the full flights: ");
@@ -699,15 +664,57 @@ public class Program {
 						System.out.println("The flight from the" + airid + "airline with the flightId of : " + fid
 								+ "is full with " + bs + "business seats and " + es + "economy seats.");
 					}
-
 				}
+
+			} else if (userInput == 5) {
+				System.out.println("---------------Booking ticket page---------------");
+				System.out.println("Flight ID: ");
+				String flightId = sc.nextLine();
+				System.out.println("Airline ID: ");
+				String airlineId = sc.nextLine();
+				boolean find = false;
+				while (true) {
+					if (!airlineId.toLowerCase().equalsIgnoreCase("aircan")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("usair")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("britair")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("airfrance")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("luftair")
+							&& !airlineId.toLowerCase().equalsIgnoreCase("italair")) {
+
+						System.out.println(
+								"Please choose one of the following: AirCan, USAir, BritAir, AirFrance, LuftAir, ItalAir.");
+						airlineId = sc.nextLine();
+					} else {
+						find = true;
+
+					}
+					if (find) {
+						PreparedStatement prepStat = null;
+						String query = ("select flight=? and flightairlineid=? from flight");
+						prepStat = conn.prepareStatement(query);
+						ResultSet rs = prepStat.executeQuery();
+						if (rs.next()) {
+							int count = rs.getInt(1);
+							if (count == 0) {
+								System.out.println("No flights at this airline have been registered yet!");
+
+							} else {
+								System.out.println("All the full flights: ");
+								String fid = rs.getString("flightid");
+								String airid = rs.getString("flightairlineid");
+								int bs = rs.getInt("flighttotalbusinessseats");
+								int es = rs.getInt("flighttotaleconomyseats");
+								System.out.println("The flight from the" + airid + "airline with the flightId of : "
+										+ fid + "is full with " + bs + "business seats and " + es + "economy seats.");
+							}
+
+						}
+					}
+				}
+			} else if (userInput == 7) {
+				System.out.println("Enter the Prices!");
 			}
 		}
-	}else if(userInput==7)
-	{
-		System.out.println("Enter the Prices!");
-	}
-	}
 
 	}
 
